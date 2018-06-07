@@ -29,8 +29,10 @@ dependencies {
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
 
     //Add library
-    implementation 'com.google.firebase:firebase-core:16.0.0'
     implementation 'com.google.firebase:firebase-database:16.0.1'
+    implementation 'com.google.firebase:firebase-core:16.0.0'
+    implementation 'com.google.firebase:firebase-storage:16.0.1'
+    implementation 'com.google.firebase:firebase-auth:16.0.1'
     implementation 'com.github.whilu.CustomButton:library:1.0.0'
     implementation 'com.github.medyo:fancybuttons:1.8.4'
     implementation 'com.rengwuxian.materialedittext:library:2.1.4'
