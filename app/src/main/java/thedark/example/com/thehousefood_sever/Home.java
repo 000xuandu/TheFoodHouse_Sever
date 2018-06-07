@@ -2,6 +2,7 @@ package thedark.example.com.thehousefood_sever;
 
 import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
@@ -61,8 +62,7 @@ public class Home extends AppCompatActivity
     Button btnUpload, btnSelect;
     Category newCategory;
     Uri saveUri;
-    AlertDialog.Builder alertDialog;
-    ProgressDialog mDialog;
+    String newUriImage = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -114,7 +114,7 @@ public class Home extends AppCompatActivity
     }
 
     private void showDialog() {
-        alertDialog = new AlertDialog.Builder(Home.this);
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(Home.this);
         alertDialog.setTitle("Add new Category");
         alertDialog.setMessage("Please fill full information");
 
@@ -136,71 +136,90 @@ public class Home extends AppCompatActivity
         btnUpload.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (edtName.getText().toString().equals("")) {
-                    Toast.makeText(Home.this, "Please enter new name of menu", Toast.LENGTH_SHORT).show();
-                } else {
-                    uploadData();
-                    mDialog.dismiss();
-                }
+                uploadImage();
             }
         });
 
         alertDialog.setView(add_menu_layout);
         alertDialog.setIcon(R.drawable.ic_shopping_cart_black_24dp);
+        alertDialog.setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                dialogInterface.dismiss();
+            }
+        });
         alertDialog.show();
     }
 
-    private void uploadData() {
-        if (saveUri != null) {
-            mDialog = new ProgressDialog(this);
-            mDialog.setMessage("Uploading...");
-            mDialog.show();
+    private void uploadImage() {
+        if (edtName.getText().toString().equals("")) {
+            Toast.makeText(Home.this, "Please enter new name of menu", Toast.LENGTH_SHORT).show();
+        } else {
+            if (saveUri != null) {
+                final ProgressDialog mDialog = new ProgressDialog(this);
+                mDialog.setMessage("Uploading...");
+                mDialog.show();
 
-            String imageName = UUID.randomUUID().toString();
-            final StorageReference imageFolder = storageReference.child("images/" + imageName);
-            imageFolder.putFile(saveUri)
-                    .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                        @Override
-                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                            imageFolder.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                                @Override
-                                public void onSuccess(Uri uri) {
-                                    //Set value new Category if image upload and we can download link:
-                                    newCategory = new Category(edtName.getText().toString(), uri.toString());
-                                    category.push().setValue(newCategory);
-                                    final Snackbar snackbar = Snackbar
-                                            .make(getCurrentFocus(), "New category " + newCategory.getName() + " was added", Snackbar.LENGTH_LONG);
-                                    View sbView = snackbar.getView();
-                                    TextView textView = (TextView) sbView.findViewById(android.support.design.R.id.snackbar_text);
-                                    textView.setTextColor(Color.WHITE);
-                                    snackbar.setAction("OK", new View.OnClickListener() {
-                                        @Override
-                                        public void onClick(View view) {
-                                            snackbar.dismiss();
-                                        }
-                                    })
-                                            .setActionTextColor(Color.GREEN);
-                                    sbView.setBackgroundColor(getApplication().getResources().getColor(R.color.backroundSnackbar));
-                                    snackbar.show();
-                                    mDialog.dismiss();
-                                }
-                            });
-                        }
-                    })
-                    .addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            Toast.makeText(Home.this, "" + e.getMessage(), Toast.LENGTH_SHORT).show();
-                            mDialog.dismiss();
-                        }
-                    })
-                    .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
-                        @Override
-                        public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
-                            double progress = (100.0 * taskSnapshot.getBytesTransferred() / taskSnapshot.getTotalByteCount());
-                            mDialog.setMessage("Upload " + progress + "%");
-                        }
-                    });
+                String imageName = UUID.randomUUID().toString();
+                final StorageReference imageFolder = storageReference.child("images/" + imageName);
+                imageFolder.putFile(saveUri)
+                        .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                            @Override
+                            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                                imageFolder.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                    @Override
+                                    public void onSuccess(Uri uri) {
+                                        //Set value new Category if image upload and we can download link:
+                                        newUriImage = uri.toString();
+                                        mDialog.dismiss();
+                                        submitData();
+                                    }
+                                });
+                            }
+                        })
+                        .addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Toast.makeText(Home.this, "" + e.getMessage(), Toast.LENGTH_SHORT).show();
+                                mDialog.dismiss();
+                            }
+                        })
+                        .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+                            @Override
+                            public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
+                                double progress = (100.0 * taskSnapshot.getBytesTransferred() / taskSnapshot.getTotalByteCount());
+                                mDialog.setMessage("Upload " + progress + "%");
+                                Toast.makeText(Home.this, "Uploaded", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+            } else {
+                Toast.makeText(this, "Please Select Image", Toast.LENGTH_SHORT).show();
+            }
+        }
+
+    }
+
+    private void submitData() {
+        if (edtName.getText().toString().equals("")) {
+            Toast.makeText(Home.this, "Please enter new name of menu", Toast.LENGTH_SHORT).show();
+        } else {
+            newCategory = new Category(edtName.getText().toString(), newUriImage);
+            category.push().setValue(newCategory);
+            newUriImage = "";
+            final Snackbar snackbar = Snackbar
+                    .make(getCurrentFocus(), "New category " + newCategory.getName() + " was added", Snackbar.LENGTH_LONG);
+            View sbView = snackbar.getView();
+            TextView textView = (TextView) sbView.findViewById(android.support.design.R.id.snackbar_text);
+            textView.setTextColor(Color.WHITE);
+            snackbar.setAction("OK", new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    snackbar.dismiss();
+                }
+            })
+                    .setActionTextColor(Color.GREEN);
+            sbView.setBackgroundColor(getApplication().getResources().getColor(R.color.backroundSnackbar));
+            snackbar.show();
         }
     }
 
@@ -233,6 +252,7 @@ public class Home extends AppCompatActivity
                 Picasso.get()
                         .load(model.getImage())
                         .into(viewHolder.imageView);
+
                 final Category clickItem = model;
                 viewHolder.setItemClickListener(new ItemClickListener() {
                     @Override
@@ -306,4 +326,113 @@ public class Home extends AppCompatActivity
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
+
+    //Update and Delete
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        if (item.getTitle().equals(Common.UPDATE)) {
+            showUpdateDialog(adapter.getRef(item.getOrder()).getKey(), adapter.getItem(item.getOrder()));
+        } else {
+            deleteCategory(adapter.getRef(item.getOrder()).getKey());
+        }
+        return super.onContextItemSelected(item);
+    }
+
+    private void deleteCategory(String key) {
+        category.child(key).removeValue();
+    }
+
+    private void showUpdateDialog(final String key, final Category item) {
+        final AlertDialog.Builder alertDialog = new AlertDialog.Builder(Home.this);
+        alertDialog.setTitle("Update Category");
+        alertDialog.setMessage("Please fill full information");
+
+        LayoutInflater inflater = this.getLayoutInflater();
+        View add_menu_layout = inflater.inflate(R.layout.add_new_menu_layout, null);
+
+        edtName = add_menu_layout.findViewById(R.id.edtName);
+        btnSelect = add_menu_layout.findViewById(R.id.btnSelect);
+        btnUpload = add_menu_layout.findViewById(R.id.btnUpload);
+
+        //set default data:
+        edtName.setText(item.getName());
+
+        //Event for button:
+        btnSelect.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                chooseImage();
+            }
+        });
+
+        btnUpload.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                changeData(item);
+            }
+        });
+        alertDialog.setView(add_menu_layout);
+        alertDialog.setIcon(R.drawable.ic_shopping_cart_black_24dp);
+        alertDialog.setPositiveButton("UPDATE", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                item.setName(edtName.getText().toString());
+                category.child(key).setValue(item);
+                Toast.makeText(Home.this, "Update Successfully", Toast.LENGTH_SHORT).show();
+            }
+        });
+        alertDialog.setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                dialogInterface.dismiss();
+            }
+        });
+        alertDialog.show();
+    }
+
+    private void changeData(final Category item) {
+        if (edtName.getText().toString().equals("")) {
+            Toast.makeText(Home.this, "Please enter new name of menu", Toast.LENGTH_SHORT).show();
+        } else {
+
+            if (saveUri != null) {
+                final ProgressDialog mDialog = new ProgressDialog(this);
+                mDialog.setMessage("Uploading...");
+                mDialog.show();
+
+                String imageName = UUID.randomUUID().toString();
+                final StorageReference imageFolder = storageReference.child("images/" + imageName);
+                imageFolder.putFile(saveUri)
+                        .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                            @Override
+                            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                                imageFolder.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                    @Override
+                                    public void onSuccess(Uri uri) {
+                                        item.setImage(uri.toString());
+                                        mDialog.dismiss();
+                                    }
+                                });
+                            }
+                        })
+                        .addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Toast.makeText(Home.this, "" + e.getMessage(), Toast.LENGTH_SHORT).show();
+                                mDialog.dismiss();
+                            }
+                        })
+                        .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+                            @Override
+                            public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
+                                double progress = (100.0 * taskSnapshot.getBytesTransferred() / taskSnapshot.getTotalByteCount());
+                                mDialog.setMessage("Upload " + progress + "%");
+                                Toast.makeText(Home.this, "Uploaded", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+            }
+        }
+    }
+
 }
