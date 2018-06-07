@@ -1,0 +1,107 @@
+{
+  "project_info": {
+    "project_number": "330264567089",
+    "firebase_url": "https://thefoodeat25-05-2018.firebaseio.com",
+    "project_id": "thefoodeat25-05-2018",
+    "storage_bucket": "thefoodeat25-05-2018.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:330264567089:android:f21042b67e12b4b9",
+        "android_client_info": {
+          "package_name": "thedark.example.com.thefoodhouse_client"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "330264567089-3gunq2fijq6o21979ccvlnsj05pgov9c.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "thedark.example.com.thefoodhouse_client",
+            "certificate_hash": "435e2e45a699be86ab99a1c7c39322942c8fcf68"
+          }
+        },
+        {
+          "client_id": "330264567089-sa56guv5el8jijooq14u6clbsmhk2n8o.apps.googleusercontent.com",
+          "client_type": 3
+        },
+        {
+          "client_id": "330264567089-sa56guv5el8jijooq14u6clbsmhk2n8o.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBOU8K3frCDReQj6ehIVUgjcHF1kFA1bLA"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "330264567089-sa56guv5el8jijooq14u6clbsmhk2n8o.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:330264567089:android:6ea1a6899de0d1ff",
+        "android_client_info": {
+          "package_name": "thedark.example.com.thehousefood_sever"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "330264567089-v8vahnvf96qlqhlruqgq9mhjl9g9tv4m.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "thedark.example.com.thehousefood_sever",
+            "certificate_hash": "435e2e45a699be86ab99a1c7c39322942c8fcf68"
+          }
+        },
+        {
+          "client_id": "330264567089-sa56guv5el8jijooq14u6clbsmhk2n8o.apps.googleusercontent.com",
+          "client_type": 3
+        },
+        {
+          "client_id": "330264567089-sa56guv5el8jijooq14u6clbsmhk2n8o.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBOU8K3frCDReQj6ehIVUgjcHF1kFA1bLA"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "330264567089-sa56guv5el8jijooq14u6clbsmhk2n8o.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
