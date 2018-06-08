@@ -42,6 +42,7 @@ import com.squareup.picasso.Picasso;
 import java.util.UUID;
 
 import thedark.example.com.thehousefood_sever.Common.Common;
+import thedark.example.com.thehousefood_sever.Food.FoodListActivity;
 import thedark.example.com.thehousefood_sever.Interface.ItemClickListener;
 import thedark.example.com.thehousefood_sever.Model.Category;
 import thedark.example.com.thehousefood_sever.ViewHolder.MenuViewHolder;
@@ -205,7 +206,7 @@ public class Home extends AppCompatActivity
         } else {
             newCategory = new Category(edtName.getText().toString(), newUriImage);
             category.push().setValue(newCategory);
-            newUriImage = "";
+
             final Snackbar snackbar = Snackbar
                     .make(getCurrentFocus(), "New category " + newCategory.getName() + " was added", Snackbar.LENGTH_LONG);
             View sbView = snackbar.getView();
@@ -220,6 +221,10 @@ public class Home extends AppCompatActivity
                     .setActionTextColor(Color.GREEN);
             sbView.setBackgroundColor(getApplication().getResources().getColor(R.color.backroundSnackbar));
             snackbar.show();
+
+            //
+            newUriImage = "";
+            saveUri = null;
         }
     }
 
@@ -247,7 +252,7 @@ public class Home extends AppCompatActivity
                         MenuViewHolder.class,
                         category) {
             @Override
-            protected void populateViewHolder(MenuViewHolder viewHolder, Category model, int position) {
+            protected void populateViewHolder(MenuViewHolder viewHolder, Category model, final int position) {
                 viewHolder.txtMenuName.setText(model.getName());
                 Picasso.get()
                         .load(model.getImage())
@@ -257,7 +262,11 @@ public class Home extends AppCompatActivity
                 viewHolder.setItemClickListener(new ItemClickListener() {
                     @Override
                     public void onClick(View view, int positon, boolean isLongClick) {
-                        Toast.makeText(Home.this, "" + clickItem.getName(), Toast.LENGTH_SHORT).show();
+                        //Get CategoryID and send to new Activity:
+                        Intent moveToFoodList = new Intent(getApplicationContext(), FoodListActivity.class);
+                        //Because CategoryID is Key, so we just get key of this item:
+                        moveToFoodList.putExtra("CategoryID", adapter.getRef(position).getKey());
+                        startActivity(moveToFoodList);
                     }
                 });
             }
@@ -369,7 +378,7 @@ public class Home extends AppCompatActivity
         btnUpload.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                changeData(item);
+                changeImage(item);
             }
         });
         alertDialog.setView(add_menu_layout);
@@ -380,6 +389,8 @@ public class Home extends AppCompatActivity
                 item.setName(edtName.getText().toString());
                 category.child(key).setValue(item);
                 Toast.makeText(Home.this, "Update Successfully", Toast.LENGTH_SHORT).show();
+                saveUri = null;
+                newUriImage = "";
             }
         });
         alertDialog.setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
@@ -391,7 +402,7 @@ public class Home extends AppCompatActivity
         alertDialog.show();
     }
 
-    private void changeData(final Category item) {
+    private void changeImage(final Category item) {
         if (edtName.getText().toString().equals("")) {
             Toast.makeText(Home.this, "Please enter new name of menu", Toast.LENGTH_SHORT).show();
         } else {
@@ -431,6 +442,8 @@ public class Home extends AppCompatActivity
                                 Toast.makeText(Home.this, "Uploaded", Toast.LENGTH_SHORT).show();
                             }
                         });
+            } else {
+                Toast.makeText(this, "Please select image", Toast.LENGTH_SHORT).show();
             }
         }
     }
